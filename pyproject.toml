@@ -6,10 +6,11 @@ authors = ["alenrajsp <alen.rajsp@um.si>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-sport-activities-features = "^0.2.9"
-fastapi = {extras = ["all"], version = "^0.70.1"}
+sport-activities-features = "^0.2.11"
+fastapi = {extras = ["all"], version = "^0.72.0"}
 python-multipart = "^0.0.5"
-jsonpickle = "^2.0.0"
+jsonpickle = "^2.1.0"
+nest-asyncio = "^1.5.4"
 
 
 [tool.poetry.dev-dependencies]

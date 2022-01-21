@@ -1,45 +1,35 @@
-from typing import List, Optional
+import os
+import uuid
 
 from fastapi import APIRouter, File, UploadFile, HTTPException
-from sport_activities_features.tcx_manipulation import TCXFile
-from sport_activities_features.gpx_manipulation import GPXFile
-import uuid
-import jsonpickle
-import os
 from fastapi.encoders import jsonable_encoder
-import json
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from sport_activities_features.gpx_manipulation import GPXFile
+from sport_activities_features.tcx_manipulation import TCXFile
 
+from helpers.file_reader import read_file
 from models.models import FileModel
 
 metadata = []
 
-
 router = APIRouter(prefix="/reader",
-    tags=["reader"])
+                   tags=["Reader"])
+
 
 @router.post("/file/", response_model=FileModel)
-async def read_file(file: UploadFile = File(...)):
+async def transform_file(file: UploadFile = File(...)):
     filename = str(uuid.uuid4())
-    if file.filename.endswith('.gpx'):
-        gpx_file = GPXFile()
-        bytes = file.file.read()
-        with open(f"temp/{filename}.gpx", 'wb+') as file_obj:
-            file_obj.write(bytes)
-        gpx = gpx_file.read_one_file(f"temp/{filename}.gpx")
-        os.remove(f"temp/{filename}.gpx")
-        return JSONResponse(content=jsonable_encoder(gpx))
-    elif file.filename.endswith('.tcx'):
-        tcx_file = TCXFile()
-        tcx = tcx_file.read_one_file(file.file)
-        return JSONResponse(content=jsonable_encoder(tcx))
-    else:
+    file = None
+    file = read_file(file, filename)
+
+    if (file == None):
         raise HTTPException(status_code=400, detail="File not of type .GPX / .TCX")
+
+    return JSONResponse(content=jsonable_encoder(file))
 
 
 @router.post("/file/integralMetrics", response_model=FileModel)
-async def read_file(file: UploadFile = File(...)):
+async def read_integral_metrics(file: UploadFile = File(...)):
     filename = str(uuid.uuid4())
     if file.filename.endswith('.gpx'):
         gpx_file = GPXFile()
@@ -55,4 +45,3 @@ async def read_file(file: UploadFile = File(...)):
         return JSONResponse(content=jsonable_encoder(tcx))
     else:
         raise HTTPException(status_code=400, detail="File not of type .GPX / .TCX")
-
