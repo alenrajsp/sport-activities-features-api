@@ -8,7 +8,7 @@ from sport_activities_features.gpx_manipulation import GPXFile
 from sport_activities_features.tcx_manipulation import TCXFile
 
 from helpers.file_reader import read_file
-from models.models import FileModel
+from models.models import FileModel, IntegralMetricsModel
 
 metadata = []
 
@@ -17,9 +17,11 @@ router = APIRouter(prefix="/reader",
 
 
 @router.post("/file/", response_model=FileModel)
-async def transform_file(file: UploadFile = File(...)):
+async def transform_file(file: UploadFile = File(..., description="GPX or TCX file")):
+    """
+    Process a TCX/GPX file into a **JSON** object.
+    """
     filename = str(uuid.uuid4())
-    file = None
     file = read_file(file, filename)
 
     if (file == None):
@@ -28,8 +30,12 @@ async def transform_file(file: UploadFile = File(...)):
     return JSONResponse(content=jsonable_encoder(file))
 
 
-@router.post("/file/integralMetrics", response_model=FileModel)
-async def read_integral_metrics(file: UploadFile = File(...)):
+@router.post("/file/integralMetrics", response_model=IntegralMetricsModel)
+async def extract_integral_metrics(file: UploadFile = File(...,
+                                                           description="GPX or TCX file")):
+    """
+    Extract integral metrics of the GPX/TCX file.
+    """
     filename = str(uuid.uuid4())
     if file.filename.endswith('.gpx'):
         gpx_file = GPXFile()

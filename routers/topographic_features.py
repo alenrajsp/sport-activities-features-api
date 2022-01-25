@@ -20,6 +20,10 @@ router = APIRouter(prefix="/topographicFeatures",
 
 @router.post("/", response_model=HillDataModel)
 async def topographic_features(ascent_threshold: Optional[int] = None, request: FileModel = Body(...)):
+    """
+    From a JSON processed exerice identify number of hills, average altitude, average ascent,
+    distance of the hills and a percentage of hills.
+    """
     untransformed_data = jsonable_encoder(request)
     standardized_data = transform_to_previous_form(untransformed_data)
     if(ascent_threshold==None):

@@ -21,17 +21,33 @@ metadata = []
 
 
 router = APIRouter(prefix="/overpy",
-    tags=["overpy"])
+    tags=["Overpy nodes transformer"])
 
 
 @router.post("/generate/", response_model=FileModel)
-async def identify_nodes(request: List[NodeModel] = Body(...)):
+async def identify_nodes(open_elevation_api:str="https://api.open-elevation.com/api/v1/lookup",
+                         request: List[NodeModel] = Body(...)):
+    """
+    Recieves a list of JSON dumped nodes
+    [Overpy.node](https://python-overpy.readthedocs.io/en/latest/api.html?highlight=node#overpy.Node) and
+    transforms them into JSON object that looks like TCXFile/GPXFile JSON. **Requires Open Elevation Api**.
+
+    Returns
+    ```
+    {
+        'positions': positions,
+        'altitudes': altitudes,
+        'distances': distances,
+        'total_distance': total_distance
+    }
+    ```
+    """
     overpy_nodes = []
     json_request = jsonable_encoder(request)
     for node in json_request:
         op_node = OverpyNodeHelper(data=node)
         overpy_nodes.append(overpy.Node.from_json(data=op_node))
-    overpy_reader = OverpyNodesReader(open_elevation_api="https://api.open-elevation.com/api/v1/lookup")
+    overpy_reader = OverpyNodesReader(open_elevation_api=open_elevation_api)
     # Returns {
     #         'positions': positions, 'altitudes': altitudes, 'distances': distances, 'total_distance': total_distance
     #         }

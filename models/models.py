@@ -14,6 +14,20 @@ class FileModel(BaseModel):
     speeds: List[float] = []
     weather: Optional[List[dict]] = []
 
+class IntegralMetricsModel(BaseModel):
+    activity_type: Optional[str] = None
+    distance: int = 0
+    duration: int = 0
+    calories: Optional[int] = None
+    hr_avg: float = 0
+    hr_max: int = 0
+    hr_min: int = 0
+    altitude_avg: Optional[float] = None
+    altitude_max: Optional[float] = None
+    altitude_min: Optional[float] = None
+    ascent: Optional[float] = None
+    descent: Optional[float] = None
+
 
 class AltitudeModel(BaseModel):
     altitudes: List[float] = []

@@ -20,13 +20,20 @@ router = APIRouter(prefix="/interruption",
 
 
 @router.post("/identification/", response_model=FileModel)
-async def identify_interruptions(overpass_api_url: Optional[str] = "https://lz4.overpass-api.de/api/interpreter", time_interval:Optional[float]=60, min_speed:Optional[float]=2, intersectionsIdentificator:Optional[bool] = True, request: FileModel = Body(...)):
+async def identify_interruptions(overpass_api_url: Optional[str] = "https://lz4.overpass-api.de/api/interpreter",
+                                 time_interval:Optional[float]=60,
+                                 min_speed:Optional[float]=2,
+                                 identifyIntersections:Optional[bool] = True, request: FileModel = Body(...)):
+    """Identifies interruptions (events where speed drops below **min speed**) in a JSON processed exercise.
+    If **identifyIntersections** is set to **True** also identifies the interruptions that happened in
+    road intersections. If used on large amounts of data (self-hosted Overpass API)
+    [https://wiki.openstreetmap.org/wiki/Overpass_API/Installation]."""
     untransformed_data = jsonable_encoder(request)
     standardized_data = transform_to_previous_form(untransformed_data)
 
     interruptionProcessor = InterruptionProcessor(time_interval, min_speed,overpass_api_url)
 
-    events = interruptionProcessor.events(standardized_data, True)
+    events = interruptionProcessor.events(standardized_data, identifyIntersections)
 
     standardized_data.update({'events':events})
 

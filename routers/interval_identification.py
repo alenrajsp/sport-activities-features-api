@@ -31,6 +31,9 @@ router = APIRouter(prefix="/interval",
 
 @router.post("/identification/heartrate", response_model=IntervalModel)
 async def interval_identification_heartrate(minimum_time:float=30, request: FileModel = Body(...)):
+    """
+    Identify intervals of different heartrates of an exercise activity and return a JSON object.
+    """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)
     Intervals = IntervalIdentificationByHeartrate(
@@ -54,6 +57,9 @@ async def interval_identification_heartrate(minimum_time:float=30, request: File
 async def interval_identification_heartrate_image(minimum_time:float=30,
                                                   request: FileModel = Body(...),
                                                   background_tasks: BackgroundTasks = BackgroundTasks()):
+    """
+    Identify intervals of different heartrates of an exercise activity and return a .png chart render.
+    """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)
     Intervals = IntervalIdentificationByHeartrate(
@@ -78,6 +84,9 @@ async def interval_identification_heartrate_image(minimum_time:float=30,
 
 @router.post("/identification/power", response_model=IntervalModel)
 async def interval_identification_power(mass:float, minimum_time:float=30, request: FileModel = Body(...)):
+    """
+    Identify intervals of different power outputs of an exercise activity and return a JSON object.
+    """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)
     Intervals = IntervalIdentificationByPower(
@@ -96,6 +105,9 @@ async def interval_identification_power(mass:float, minimum_time:float=30, reque
 async def interval_identification_power_image(mass:float, minimum_time:float=30,
                                               request: FileModel = Body(...),
                                               background_tasks: BackgroundTasks = BackgroundTasks()):
+    """
+    Identify intervals of different power outputs of an exercise activity and return a .png chart render.
+    """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)
     Intervals = IntervalIdentificationByPower(

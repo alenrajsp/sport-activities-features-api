@@ -1,44 +1,42 @@
-import json
 import os
-from typing import List, Optional
+from typing import List
+from zipfile import ZipFile
+import os
+import shutil
+import uuid
+from typing import List
 
 import numpy as np
-import overpy
-from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Body
+from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from sport_activities_features import IntervalIdentificationByPower, IntervalIdentificationByHeartrate, PlotData
+from fastapi.responses import FileResponse
+from sport_activities_features import IntervalIdentificationByHeartrate, PlotData
 from sport_activities_features.area_identification import AreaIdentification
-from sport_activities_features.overpy_node_manipulation import OverpyNodesReader
-from sport_activities_features.tcx_manipulation import TCXFile
-from sport_activities_features.gpx_manipulation import GPXFile
-from sport_activities_features.weather_identification import WeatherIdentification
-import uuid
-import jsonpickle
 from starlette.background import BackgroundTasks
 from starlette.responses import JSONResponse
-from fastapi.responses import FileResponse
 
 from helpers.file_reader import read_file
 from helpers.file_transformer import transform_to_previous_form
-from helpers.overpy_transformer import OverpyNodeHelper
+from helpers.folder import Folder
 from helpers.temp_file import save_temp_plot_image
-from models.models import FileModel, NodeModel, IntervalModel
-import shutil
+from models.models import FileModel, IntervalModel
 
 metadata = []
 
-
 router = APIRouter(prefix="/area",
-    tags=["Area identification"])
+                   tags=["Area identification"])
 
 
-@router.post("/identification/", response_model=IntervalModel)
-async def interval_identification_heartrate(files: List[UploadFile] = File(...)):
+@router.post("/identification/", response_class=FileResponse)
+async def area_identification(files: List[UploadFile] = File(...),
+                                            background_tasks: BackgroundTasks = BackgroundTasks()):
     uuid_folder_name = str(uuid.uuid4())
     folder_name = f'temp/{uuid_folder_name}/'
     os.mkdir(folder_name)
     areas = np.array([])
+
+    folder_helper = Folder()
+    zipObj = ZipFile(folder_helper.temp+os.path.sep+uuid_folder_name+'.zip', 'w')
 
     for file in files:
         activity = read_file(file, file.filename)
@@ -55,39 +53,21 @@ async def interval_identification_heartrate(files: List[UploadFile] = File(...))
         if area_data['distance'] != 0.0:
             areas = np.append(areas, area)
         plot = area.plot_map()
-        name = f'temp/{uuid_folder_name}/{file.filename}.png'
+        name = f'{folder_helper.temp}{os.path.sep}{uuid_folder_name}/{file.filename}.png'
         plot.savefig(name)
+        zipObj.write(name, os.path.basename(name))
+
     area_plot = AreaIdentification.plot_activities_inside_area_on_map(areas, area_coordinates)
-    name = f'temp/{uuid_folder_name}/area.png'
+    name = f'{folder_helper.temp}{os.path.sep}{uuid_folder_name}{os.path.sep}area.png'
+
     area_plot.savefig(name)
+    zipObj.write(name, os.path.basename(name))
+    zipObj.close()
+    shutil.rmtree(f'{folder_helper.temp}{os.path.sep}{uuid_folder_name}')
 
-    shutil.make_archive(f'{uuid_folder_name}', 'zip', base_dir=f'temp/{uuid_folder_name}/', root_dir=f'temp/')
 
-    data = {"test":"test"}
-
-    return JSONResponse(content=jsonable_encoder(data))
-
-@router.post("/identification/heartrate/image", response_class=FileResponse)
-async def interval_identification_heartrate_image(minimum_time:float=30,
-                                                  request: FileModel = Body(...),
-                                                  background_tasks: BackgroundTasks = BackgroundTasks()):
-    untransformed_data = jsonable_encoder(request)
-    activity = transform_to_previous_form(untransformed_data)
-    Intervals = IntervalIdentificationByHeartrate(
-        activity["distances"],
-        activity["timestamps"],
-        activity["altitudes"],
-        activity["heartrates"],
-        minimum_time
-    )
-
-    Intervals.identify_intervals()
-    all_intervals = Intervals.return_intervals()
-
-    Map = PlotData()
-    plot = Map.plot_intervals_in_map(activity["timestamps"], activity["distances"], all_intervals)
-
-    name, response = save_temp_plot_image(plot)
-    background_tasks.add_task(os.remove, name)
+    response = FileResponse(folder_helper.temp+os.path.sep+uuid_folder_name+'.zip', media_type='application/octet-stream',
+                            filename='area_identification_charts.zip')
+    background_tasks.add_task(os.remove, folder_helper.temp+os.path.sep+uuid_folder_name+'.zip')
 
     return response

@@ -8,28 +8,20 @@ from models.models import FileModel
 
 metadata = []
 
-
 router = APIRouter(prefix="/weather",
-    tags=["weather"])
+                   tags=["Weather"])
 
 
 @router.post("/identification/", response_model=FileModel)
 async def identify_weather(vc_api_key: str, request: FileModel = Body(...)):
     """
-    REQUEST
-
-        POST /weather/identification/
-
-        Body: Response of JSON /reader/
-
-    RESPONSE
-
-        JSON with added Weather data
+    Adds weather data to the GPX/TCX processed data. [Visual Crossing]([Visual Crossing](https://visualcrossing.com/)) API key required.
+    Accepts JSON from **/reader** endpoint.
     """
     untransformed_data = jsonable_encoder(request)
     standardized_data = transform_to_previous_form(untransformed_data)
-    weather_identificator = WeatherIdentification(standardized_data['positions'], standardized_data['timestamps'], vc_api_key=vc_api_key)
+    weather_identificator = WeatherIdentification(standardized_data['positions'], standardized_data['timestamps'],
+                                                  vc_api_key=vc_api_key)
     weather = weather_identificator.get_weather()
-    standardized_data.update({'weather':weather})
+    standardized_data.update({'weather': weather})
     return JSONResponse(content=jsonable_encoder(standardized_data))
-

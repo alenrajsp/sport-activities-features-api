@@ -20,7 +20,7 @@ router = APIRouter(prefix="/hillIdentification",
 @router.post("/image", response_class=FileResponse)
 async def hill_identification(request: FileModel = Body(...), background_tasks: BackgroundTasks = BackgroundTasks()):
     """
-    Identify hills from the HillIdentification class and returns a png render of PlotData class as a file.
+    Identify hills from the HillIdentification class and return a png render. Recieves a JSON processed exercise file.
     """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)

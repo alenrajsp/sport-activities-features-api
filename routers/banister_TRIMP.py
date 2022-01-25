@@ -14,7 +14,7 @@ router = APIRouter(prefix="/trainingLoadBannister",
 async def training_load(duration: float = Query(..., description="Duration of training in minutes"),
                         average_heartrate: float = Query(..., description="Average heartrate during the exercise")):
     """
-    Bannister training load. API method of utilisation **BanisterTRIMP()** class. Returns TRIPM value.
+    Calculates **Bannister training load** from average heartrate (bpm) and duration (in minutes) processed exercise.
     """
     TRIMP = BanisterTRIMP(duration, average_heartrate)
     response = {"TRIPM": TRIMP.calculate_TRIMP()}
