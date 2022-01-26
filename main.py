@@ -1,4 +1,3 @@
-import nest_asyncio
 import uvicorn
 from fastapi import FastAPI
 
@@ -6,7 +5,6 @@ from routers import reader, weather, overpy_node_manipulation, interval_identifi
     banister_TRIMP, hill_identification, dead_end, missing_elevation, \
     topographic_features, interruptions, area, csv
 
-nest_asyncio.apply()
 
 title = "sport-activities-features API"
 description = """
