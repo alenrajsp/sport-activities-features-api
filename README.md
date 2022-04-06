@@ -1,6 +1,6 @@
 # sport-activities-features API
 
-Sport-activities-features API is a Python library for using 
+Sport-activities-features API is a Python library for using
 [sport-activities-features](https://github.com/firefly-cpp/sport-activities-features) as an FastAPI based web API.
 
 ### Note
@@ -27,7 +27,7 @@ uvicorn main:app --reload
 1. Use the official image from DockerHub repository 
    (alenrajsp/sport-activities-features-api:0.2)[https://hub.docker.com/r/alenrajsp/sport-activities-features-api]
 2. Run from terminal with 
-   `docker run -p <PORT>:80 alenrajsp/niaamlapi:0.2`. 
+   `docker run -p <PORT>:80 alenrajsp/sport-activities-features-api:0.1`. 
    The **\<PORT>** variable is the port from which you want to access the container.
 
 | Folder / file      | Description |
