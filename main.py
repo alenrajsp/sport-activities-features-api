@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from routers import reader, weather, overpy_node_manipulation, interval_identification, \
     banister_TRIMP, hill_identification, dead_end, missing_elevation, \
@@ -57,8 +58,21 @@ in an JSON processed exercise.
 * Identify activities inside a given polygon area and render them on a png generated map.
 
 """
-version = "0.1.0"
+version = "0.2.0"
 app = FastAPI(title=title, description=description, version=version)
+
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.include_router(reader.router)
 app.include_router(weather.router)

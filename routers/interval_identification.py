@@ -5,22 +5,15 @@ from typing import List, Optional
 import overpy
 from fastapi import APIRouter, File, UploadFile, HTTPException, Request, Body
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from sport_activities_features import IntervalIdentificationByPower, IntervalIdentificationByHeartrate, PlotData
-from sport_activities_features.overpy_node_manipulation import OverpyNodesReader
-from sport_activities_features.tcx_manipulation import TCXFile
-from sport_activities_features.gpx_manipulation import GPXFile
-from sport_activities_features.weather_identification import WeatherIdentification
-import uuid
-import jsonpickle
+from sport_activities_features import PlotData
+from sport_activities_features.interval_identification import IntervalIdentificationByHeartRate, IntervalIdentificationByPower
 from starlette.background import BackgroundTasks
 from starlette.responses import JSONResponse
 from fastapi.responses import FileResponse
 
 from helpers.file_transformer import transform_to_previous_form
-from helpers.overpy_transformer import OverpyNodeHelper
 from helpers.temp_file import save_temp_plot_image
-from models.models import FileModel, NodeModel, IntervalModel
+from models.models import FileModel, IntervalModel
 
 metadata = []
 
@@ -36,7 +29,7 @@ async def interval_identification_heartrate(minimum_time:float=30, request: File
     """
     untransformed_data = jsonable_encoder(request)
     activity = transform_to_previous_form(untransformed_data)
-    Intervals = IntervalIdentificationByHeartrate(
+    Intervals = IntervalIdentificationByHeartRate(
         activity["distances"],
         activity["timestamps"],
         activity["altitudes"],

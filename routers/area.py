@@ -10,7 +10,8 @@ import numpy as np
 from fastapi import APIRouter, File, UploadFile, Body
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse
-from sport_activities_features import IntervalIdentificationByHeartrate, PlotData
+from sport_activities_features import PlotData
+from sport_activities_features.interval_identification import IntervalIdentificationByHeartRate, IntervalIdentificationByPower
 from sport_activities_features.area_identification import AreaIdentification
 from starlette.background import BackgroundTasks
 from starlette.responses import JSONResponse

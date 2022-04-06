@@ -25,9 +25,9 @@ uvicorn main:app --reload
 
 ## How to use (Docker)
 1. Use the official image from DockerHub repository 
-   (alenrajsp/sport-activities-features-api:0.1)[https://hub.docker.com/r/alenrajsp/sport-activities-features-api]
+   (alenrajsp/sport-activities-features-api:0.2)[https://hub.docker.com/r/alenrajsp/sport-activities-features-api]
 2. Run from terminal with 
-   `docker run -p <PORT>:80 alenrajsp/niaamlapi:0.1`. 
+   `docker run -p <PORT>:80 alenrajsp/niaamlapi:0.2`. 
    The **\<PORT>** variable is the port from which you want to access the container.
 
 | Folder / file      | Description |
