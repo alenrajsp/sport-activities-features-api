@@ -25,17 +25,17 @@ uvicorn main:app --reload
 
 ## How to use (Docker)
 1. Use the official image from DockerHub repository 
-   (alenrajsp/sport-activities-features-api:0.2)[https://hub.docker.com/r/alenrajsp/sport-activities-features-api]
+   [alenrajsp/sport-activities-features-api](https://hub.docker.com/r/alenrajsp/sport-activities-features-api)
 2. Run from terminal with 
-   `docker run -p <PORT>:80 alenrajsp/sport-activities-features-api:0.1`. 
+   `docker run -p <PORT>:80 alenrajsp/sport-activities-features-api`. 
    The **\<PORT>** variable is the port from which you want to access the container.
 
-| Folder / file      | Description |
-| ----------- | ----------- |
-| /helpers      | Folder for helper classes (JSON transformations, folder navigation, temp file management)       |
-| /models   | Request / Response FastAPI models        |
-| /routers   | Individual routes of FastAPI and functionalities        |
-| /temp   | Temporary files that, get generated when recieving requests and deleted afterwards     |
+| Folder / file | Description                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| /helpers      | Folder for helper classes (JSON transformations, folder navigation, temp file management) |
+| /models       | Request / Response FastAPI models                                                         |
+| /routers      | Individual routes of FastAPI and functionalities                                          |
+| /temp         | Temporary files that, get generated when recieving requests and deleted afterwards        |
 
 
 
